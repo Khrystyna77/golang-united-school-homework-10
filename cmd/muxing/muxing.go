@@ -18,8 +18,19 @@ main function reads host/port from env just for an example, flavor it following 
 */
 
 // Start /** Starts the web server listener on given host and port.
+func Gethandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	PARAM := vars["PARAM"]
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(fmt.Sprintf("Hello, %s!", PARAM)))
+}
+func Badhandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusInternalServerError)
+}
 func Start(host string, port int) {
 	router := mux.NewRouter()
+	router.HandleFunc("/name/{PARAM}", Gethandler).Methods(http.MethodGet)
+	router.HandleFunc("/bad", Badhandler).Methods(http.MethodGet)
 
 	log.Println(fmt.Printf("Starting API server on %s:%d\n", host, port))
 	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), router); err != nil {
