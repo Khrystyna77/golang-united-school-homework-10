@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -27,10 +28,34 @@ func Gethandler(w http.ResponseWriter, r *http.Request) {
 func Badhandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusInternalServerError)
 }
+func Post1handler(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "can't read body", http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(fmt.Sprintf("I got message:\n%s", body)))
+}
+func Post2handler(w http.ResponseWriter, r *http.Request) {
+	//header, err := ioutil.ReadAll(r.Header)
+	ua := r.Header.Get("a")
+	ua2 := r.Header.Get("b")
+
+	result := ua + ua2
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(fmt.Sprintf("ab\n%s", result)))
+
+}
+
 func Start(host string, port int) {
 	router := mux.NewRouter()
 	router.HandleFunc("/name/{PARAM}", Gethandler).Methods(http.MethodGet)
 	router.HandleFunc("/bad", Badhandler).Methods(http.MethodGet)
+	router.HandleFunc("/bad", Badhandler).Methods(http.MethodGet)
+	router.HandleFunc("/data", Post1handler).Methods(http.MethodPost)
+	router.HandleFunc("/headers", Post2handler).Methods(http.MethodPost)
 
 	log.Println(fmt.Printf("Starting API server on %s:%d\n", host, port))
 	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), router); err != nil {
