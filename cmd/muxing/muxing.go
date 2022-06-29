@@ -45,7 +45,7 @@ func Post2handler(w http.ResponseWriter, r *http.Request) {
 	result := ua + ua2
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(fmt.Sprintf("ab\n%s", result)))
+	w.Write([]byte(fmt.Sprintf("a+b\n%s", result)))
 
 }
 
