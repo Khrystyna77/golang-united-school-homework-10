@@ -42,10 +42,14 @@ func Post2handler(w http.ResponseWriter, r *http.Request) {
 	ua := r.Header.Get("a")
 	ua2 := r.Header.Get("b")
 
-	result := ua + ua2
+	result, err := strconv.Atoi(ua + ua2)
+	if err != nil {
+		log.Fatal(err)
+	}
+	result2 := strconv.Itoa(result)
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(fmt.Sprintf("a+b\n%s", result)))
+	w.Write([]byte(fmt.Sprintf("a+b\n%s", result2)))
 
 }
 
